@@ -42,13 +42,10 @@ def login(username, password, account):
     return (None, None)
 
 def update_work(rg_data, csv_data):
-    merged_dict = dict(rg_data, **csv_data)
-    print merged_dict
-    #for key,val in rg_data.items():
-    #    if val['contactLastname'] in csv_data['contactLastname']:
-    #        print val
+#   TODO: merge array of dict with array of k,v where key is id and v is dict
 
-def get_contacts(token, tokenHash, csv_data):
+
+def merge_contacts(token, tokenHash, csv_data):
 
     start = 0
     limit = 50
@@ -87,7 +84,6 @@ def get_contacts(token, tokenHash, csv_data):
     return None
 
 def main(argv):
-    key = 'QP4f2HO9'
 
     parser = OptionParser()
     parser.add_option("-i", "--inputfile", dest="inputfile",
@@ -103,19 +99,14 @@ def main(argv):
 
     if options.inputfile is None or options.username is None or options.password is None or options.account is None:
         parser.error("Missing arguments")
-        sys.exit(0)
-
-    print 'Input file is ', options.inputfile
-    print 'username is ', options.username
-    print 'password is ', options.password
-    print 'account is ', options.account
+        sys.exit(1)
 
     (token, tokenHash) = login(options.username, options.password, options.account)
     if token is None:
-        sys.exit(2)
-    print token, tokenHash
+        sys.exit(1)
+
     data = import_data_file(options.inputfile)
-    get_contacts(token, tokenHash, data)
+    merge_contacts(token, tokenHash, data)
 
 
 
