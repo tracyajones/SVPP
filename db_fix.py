@@ -43,6 +43,9 @@ def login(username, password, account):
 
 def update_work(rg_data, csv_data):
 #   TODO: merge array of dict with array of k,v where key is id and v is dict
+#   something like this where index is the index of matching records
+#   updated_recrod = rg_data[rg_index].copy()
+#   updated_record.update(csv_data[csv_index])
 
 
 def merge_contacts(token, tokenHash, csv_data):
