@@ -9,6 +9,7 @@ import pprint
 import requests
 import sys
 
+pp = pprint.PrettyPrinter()
 
 def import_data_file(inputfile):
     with open(inputfile, 'rb') as csvfile:
@@ -41,19 +42,25 @@ def login(username, password, account):
         print r.text
     return (None, None)
 
-def update_work(rg_data, csv_data):
-#   TODO: merge array of dict with array of k,v where key is id and v is dict
-#   something like this where index is the index of matching records
-#   updated_recrod = rg_data[rg_index].copy()
-#   updated_record.update(csv_data[csv_index])
-    print csv_data[0]
-
+def update_work(updated_company_list, rg_data, csv_data):
+#   TODO: optimize this looping code to something more pythonic
+    for rg in rg_data:
+        for csv in csv_data:
+            if csv['contactCompany'] != '':
+                if rg['contactLastname'] == csv['contactLastname']:
+                    # TODO: not finding my own name...  something is wrong
+                    if rg['contactLastname'].lower() == 'jones':
+                        print 'FOUND IT'
+                    if rg['contactFirstname'] == csv['contactFirstname']:
+                        if rg['contactCompany'] != csv['contactCompany']:
+                            rg['contactCompany'] = csv['contactCompany']
+                            updated_company_list.append(rg)
 
 def merge_contacts(token, tokenHash, csv_data):
 
     start = 0
-    limit = 400
-    pp = pprint.PrettyPrinter()
+    limit = 100
+    updated_company_list = []
     while (1):
         data = {
                 "token" : token,
@@ -74,18 +81,16 @@ def merge_contacts(token, tokenHash, csv_data):
             if content['status'] == 'ok':
                 for key,val in content['data'].items():
                     pp.pprint(val)
-                update_work(content['data'], csv_data)
+                update_work(updated_company_list, content['data'].values(), csv_data)
                 start += limit
                 if start > int(content['foundRows']):
-                    return
+                    return updated_company_list
             else:
                 print content['message']
                 return
         else:
             print r.text
             return
-
-    return None
 
 def main(argv):
 
@@ -110,8 +115,8 @@ def main(argv):
         sys.exit(1)
 
     data = import_data_file(options.inputfile)
-    merge_contacts(token, tokenHash, data)
-
+    updated_company_list = merge_contacts(token, tokenHash, data)
+    pp.pprint(updated_company_list)
 
 
 if __name__ == "__main__":
