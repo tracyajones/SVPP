@@ -46,12 +46,13 @@ def update_work(rg_data, csv_data):
 #   something like this where index is the index of matching records
 #   updated_recrod = rg_data[rg_index].copy()
 #   updated_record.update(csv_data[csv_index])
+    print csv_data[0]
 
 
 def merge_contacts(token, tokenHash, csv_data):
 
     start = 0
-    limit = 50
+    limit = 400
     pp = pprint.PrettyPrinter()
     while (1):
         data = {
@@ -75,7 +76,7 @@ def merge_contacts(token, tokenHash, csv_data):
                     pp.pprint(val)
                 update_work(content['data'], csv_data)
                 start += limit
-                if start > content['foundRows']:
+                if start > int(content['foundRows']):
                     return
             else:
                 print content['message']
