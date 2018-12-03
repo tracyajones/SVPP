@@ -9,6 +9,7 @@ import os
 import pprint
 import requests
 import sys
+import utils
 
 pp = pprint.PrettyPrinter()
 
@@ -30,25 +31,6 @@ def import_data_file(input_dir):
                                         'contactCompany': row['Place of Employment'].strip()})
     return csvdata
 
-def login(username, password, account):
-    login_data = {
-        "username": username,
-        "password": password,
-        "accountNumber": account,
-        "action": "login"
-    }
-
-    print json.dumps(login_data)
-    r = requests.post('https://api.rescuegroups.org/http/v2.json', data = json.dumps(login_data))
-    if r.status_code == 200:
-        content = json.loads(r.content)
-        if content['status'] == 'ok':
-            return (content['data']['token'], content['data']['tokenHash'])
-        else:
-            print content['message']
-    else:
-        print r.text
-    return (None, None)
 
 def update_work(updated_company_list, rg_data, csv_data):
 #   TODO: optimize this looping code to something more pythonic
@@ -130,7 +112,8 @@ def main(argv):
         parser.error("Missing arguments")
         sys.exit(1)
 
-    (token, tokenHash) = login(options.username, options.password, options.account)
+    (token, tokenHash) = utils.login(options.username, options.password,
+                                options.account)
     if token is None:
         sys.exit(1)
 

@@ -34,9 +34,9 @@ def login(username, password, account):
         print r.text
     return (None, None)
 
-def get_data(data, processor_func, limit=100, verbose=False):
-    start = 0
+def get_data(data, processor_func, start=0, limit=100, verbose=False):
     val = []
+    printHeader = True
     while (1):
         r = requests.post('https://api.rescuegroups.org/http/v2.json',
                           data=json.dumps(data))
@@ -46,11 +46,16 @@ def get_data(data, processor_func, limit=100, verbose=False):
 
                 if processor_func is not None:
                     val = processor_func(content, val)
+                else:
+                    val = append_data(val, content['data'].items())
 
                 if verbose:
-                    for key, val in content['data'].items():
-                        print key, val
+                    if printHeader:
+                        print ' total rows %d' % int(content['foundRows'])
+                    for k, v in content['data'].items():
+                        print k, v
                 start += limit
+                data['search']['resultStart'] = start
                 if start >= int(content['foundRows']):
                     return val
             else:
@@ -59,3 +64,8 @@ def get_data(data, processor_func, limit=100, verbose=False):
         else:
             print r.text
             return
+
+def append_data(data, val):
+    for k,v in val:
+        data.append(v)
+    return data

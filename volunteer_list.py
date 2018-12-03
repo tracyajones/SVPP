@@ -66,7 +66,7 @@ def get_animal_id(token, tokenHash, animal_name, animal_species):
                 data.append(key)
                 return data
 
-    return get_data(data, process_data, limit)
+    return utils.get_data(data, process_data, limit)
 
 def get_file_list(token, tokenHash, id):
     limit = 50
@@ -175,7 +175,7 @@ def show_data(token, tokenHash):
             "fields": ["volunteerName", "journalEntryComment"]
         }
     }
-    get_data(data, processor_func=None, verbose=True)
+    utils.get_data(data, processor_func=None, verbose=True)
 
 
 def store_data(output_file, csv_data):
@@ -215,7 +215,7 @@ def main(argv):
         parser.error("Missing arguments")
         sys.exit(1)
 
-    (token, tokenHash) = login(options.username, options.password,
+    (token, tokenHash) = utils.login(options.username, options.password,
                                options.account)
     if token is None:
         sys.exit(1)
